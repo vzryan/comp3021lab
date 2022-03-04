@@ -3,7 +3,7 @@ package comp3021.src.comp3021.base;
 import java.util.Date;
 import java.util.Objects;
 
-public class Note {
+public class Note implements Comparable<Note>{
     private Date date;
     private String title;
     public Note(String title){
@@ -19,5 +19,20 @@ public class Note {
 
     public boolean equals(Note o) {
         return title.equals(o.title);
+    }
+
+    @Override
+    public int compareTo(Note o) {
+        //More recent is smaller
+        if (this.date.before(o.date)){
+            return -1;
+        }
+        else if (this.date.equals(o.date)){
+            return 0;
+        }
+        return 1;
+    }
+    public String toString(){
+        return date.toString() + "\t" +title;
     }
 }

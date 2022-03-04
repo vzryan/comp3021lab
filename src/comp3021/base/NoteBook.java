@@ -1,6 +1,8 @@
 package comp3021.src.comp3021.base;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class NoteBook {
     private ArrayList<Folder> folders;
@@ -37,5 +39,19 @@ public class NoteBook {
         }
         dest.addNote(note);
         return true;
+    }
+    public void sortFolders(){
+        Collections.sort(folders);
+    }
+    public boolean createTextNote(String foldername,String title,String content){
+        TextNote temp = new TextNote(title,content);
+        return insertNote(foldername,temp);
+    }
+    public List<Note> searchNotes(String keywords){
+        List<Note> temp = new ArrayList<>();
+        for (Folder x: folders){
+            temp.addAll(x.searchNotes(keywords));
+        }
+        return temp;
     }
 }
