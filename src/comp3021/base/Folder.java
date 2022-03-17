@@ -2,9 +2,10 @@ package comp3021.src.comp3021.base;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Folder implements Comparable<Folder>{
+public class Folder implements Comparable<Folder>, Serializable {
     private ArrayList<Note> notes;
     private String name;
     public Folder (String name){

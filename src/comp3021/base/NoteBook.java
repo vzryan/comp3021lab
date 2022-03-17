@@ -3,11 +3,33 @@ package comp3021.src.comp3021.base;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.Serializable;
 
-public class NoteBook {
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+
+
+public class NoteBook implements java.io.Serializable{
+    private static final long serialVersionUID =1L;
     private ArrayList<Folder> folders;
     public NoteBook(){
         folders = new  ArrayList<Folder>();
+    }
+    public NoteBook(String file){
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        try{
+            fis = new FileInputStream(file);
+            in = new ObjectInputStream(fis);
+            NoteBook object = (NoteBook) in.readObject();
+            this.folders = object.getFolders();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public boolean createTextNote(String foldername,String title){
         TextNote temp = new TextNote(title);
@@ -53,5 +75,20 @@ public class NoteBook {
             temp.addAll(x.searchNotes(keywords));
         }
         return temp;
+    }
+    public boolean save(String file){
+        FileOutputStream fos = null;
+        ObjectOutputStream out = null;
+        try{
+            fos = new FileOutputStream(file);
+            out = new ObjectOutputStream(fos);
+            out.writeObject(this);
+            out.close();
+            fos.close();
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
