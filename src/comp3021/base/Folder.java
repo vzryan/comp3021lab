@@ -64,125 +64,146 @@ public class Folder implements Comparable<Folder>, Serializable {
     public void sortNotes(){
         Collections.sort(notes);
     }
-    public List<Note> searchNotes (String keywords){
+    public List<Note> searchNotes (String keywords) {
         keywords = keywords.toLowerCase(Locale.ROOT);
-        String [] temp = keywords.split(" ");
-        List<String> andcondition = new ArrayList<String>();
-        for (int i =0;i<=temp.length-1;i++){
-            if (i==0){
-                if (!temp[i+1].equals("or")){
-                    if (!temp[i].equals("or")) {
-                        andcondition.add(temp[i]);
+        String[] temp = keywords.split(" ");
+        if (temp.length <= 1) {
+            //System.out.println("DLLM");
+            List<Note> result = new ArrayList<>();
+            for ( Note y : notes){
+                if (y instanceof ImageNote) {
+                    if (y.getTitle().toLowerCase(Locale.ROOT).contains(temp[0])) {
+                        result.add(y);
+                    }
+                } else if (y instanceof TextNote) {
+                    boolean existtitletext = false;
+                    if (y.getTitle().toLowerCase(Locale.ROOT).contains(temp[0])) {
+                        existtitletext = true;
+                    } else if (((TextNote) y).getContent().toLowerCase(Locale.ROOT).contains(temp[0])) {
+                        existtitletext = true;
+                    }
+                    if (existtitletext) {
+                        result.add(y);
                     }
                 }
             }
-            if (i== temp.length-1){
-                if (!temp[i-1].equals("or")){
-                    if (!temp[i].equals("or")) {
-                        andcondition.add(temp[i]);
-                    }
-                }
-            }
-            if ((i>=1)&&(i<temp.length-1)){
-                if (!temp[i-1].equals("or")){
-                    if (!temp[i+1].equals("or")){
+            return result;
+        } else {
+            List<String> andcondition = new ArrayList<String>();
+            for (int i = 0; i <= temp.length - 1; i++) {
+                if (i == 0) {
+                    if (!temp[i + 1].equals("or")) {
                         if (!temp[i].equals("or")) {
                             andcondition.add(temp[i]);
                         }
                     }
                 }
-            }
-        }
-        //System.out.println("And condtions");
-        //System.out.println(andcondition);
-        List<List<String>> orcondition = new ArrayList<List<String>>();
-        List<String> tempor= new ArrayList<String>();
-        for (int i =0;i<=temp.length-1;i++){
-            if ( (i>=1)& (i< temp.length-1) ){
-                if (!temp[i-1].equals("or")&&(temp[i+1].equals("or"))){
-                    tempor = new ArrayList<String>();
-                    tempor.add(temp[i]);
-                }
-                if (temp[i-1].equals("or")&&(temp[i+1].equals("or"))){
-                    tempor.add(temp[i]);
-                }
-                if (temp[i-1].equals("or")&&(!temp[i+1].equals("or"))){
-                    tempor.add(temp[i]);
-                    orcondition.add(tempor);
-                    tempor=null;
-                }
-            }
-            if ((i>=1)&(i==temp.length-1)){
-                if (temp[i-1].equals("or")){
-                    tempor.add(temp[i]);
-                    orcondition.add(tempor);
-                    tempor=null;
-                }
-            }
-            if ((i==0)&&(i< temp.length-1)){
-                if (temp[i+1].equals("or")){
-                    tempor = new ArrayList<String>();
-                    tempor.add(temp[i]);
-                }
-            }
-        }
-        //System.out.println("Or condtions");
-        //System.out.println(orcondition);
-
-        List<Note> result = new ArrayList<>();
-        for (Note y:notes){
-            boolean allexist = true;
-            for (String x:andcondition){
-                if (y instanceof ImageNote){
-                    if (! y.getTitle().toLowerCase(Locale.ROOT).contains(x) ){
-                        allexist = false;
-                    }
-                }
-                else if (y instanceof TextNote){
-                    boolean existtitletext = false;
-                    if (! y.getTitle().toLowerCase(Locale.ROOT).contains(x) ){
-                        existtitletext = true;
-                    }
-                    else if ( ((TextNote)y).getContent().toLowerCase(Locale.ROOT).contains(x) ){
-                        existtitletext = true;
-                    }
-                    if (!existtitletext){
-                        allexist = false;
-                    }
-                }
-
-            }
-            boolean allexistor = true;
-            for (List<String> q: orcondition){
-                //Check each or compound if all have
-                //Check each string in or if either exist
-                boolean allexistin = false;
-                for (String p:q){
-                    if (y instanceof ImageNote){
-                        if (y.getTitle().toLowerCase(Locale.ROOT).contains(p)){
-                            allexistin = true;
+                if (i == temp.length - 1) {
+                    if (!temp[i - 1].equals("or")) {
+                        if (!temp[i].equals("or")) {
+                            andcondition.add(temp[i]);
                         }
                     }
-                    if (y instanceof TextNote){
-                        if ( ((TextNote)y).getContent().toLowerCase(Locale.ROOT).contains(p)  ){
-                            allexistin = true;
+                }
+                if ((i >= 1) && (i < temp.length - 1)) {
+                    if (!temp[i - 1].equals("or")) {
+                        if (!temp[i + 1].equals("or")) {
+                            if (!temp[i].equals("or")) {
+                                andcondition.add(temp[i]);
+                            }
                         }
-                        if ( ((TextNote)y).getTitle().toLowerCase(Locale.ROOT).contains(p)){
-                            allexistin = true;
-                        }
-
                     }
                 }
-                if (!allexistin){
-                    allexistor = false;
+            }
+            //System.out.println("And condtions");
+            //System.out.println(andcondition);
+            List<List<String>> orcondition = new ArrayList<List<String>>();
+            List<String> tempor = new ArrayList<String>();
+            for (int i = 0; i <= temp.length - 1; i++) {
+                if ((i >= 1) & (i < temp.length - 1)) {
+                    if (!temp[i - 1].equals("or") && (temp[i + 1].equals("or"))) {
+                        tempor = new ArrayList<String>();
+                        tempor.add(temp[i]);
+                    }
+                    if (temp[i - 1].equals("or") && (temp[i + 1].equals("or"))) {
+                        tempor.add(temp[i]);
+                    }
+                    if (temp[i - 1].equals("or") && (!temp[i + 1].equals("or"))) {
+                        tempor.add(temp[i]);
+                        orcondition.add(tempor);
+                        tempor = null;
+                    }
+                }
+                if ((i >= 1) & (i == temp.length - 1)) {
+                    if (temp[i - 1].equals("or")) {
+                        tempor.add(temp[i]);
+                        orcondition.add(tempor);
+                        tempor = null;
+                    }
+                }
+                if ((i == 0) && (i < temp.length - 1)) {
+                    if (temp[i + 1].equals("or")) {
+                        tempor = new ArrayList<String>();
+                        tempor.add(temp[i]);
+                    }
                 }
             }
-            if (allexistor&&allexist){
-                result.add(y);
+            //System.out.println("Or condtions");
+           // System.out.println(orcondition);
+
+            List<Note> result = new ArrayList<>();
+            for (Note y : notes) {
+                boolean allexist = true;
+                for (String x : andcondition) {
+                    if (y instanceof ImageNote) {
+                        if (!y.getTitle().toLowerCase(Locale.ROOT).contains(x)) {
+                            allexist = false;
+                        }
+                    } else if (y instanceof TextNote) {
+                        boolean existtitletext = false;
+                        if (y.getTitle().toLowerCase(Locale.ROOT).contains(x)) {
+                            existtitletext = true;
+                        } else if (((TextNote) y).getContent().toLowerCase(Locale.ROOT).contains(x)) {
+                            existtitletext = true;
+                        }
+                        if (!existtitletext) {
+                            allexist = false;
+                        }
+                    }
+
+                }
+                boolean allexistor = true;
+                for (List<String> q : orcondition) {
+                    //Check each or compound if all have
+                    //Check each string in or if either exist
+                    boolean allexistin = false;
+                    for (String p : q) {
+                        if (y instanceof ImageNote) {
+                            if (y.getTitle().toLowerCase(Locale.ROOT).contains(p)) {
+                                allexistin = true;
+                            }
+                        }
+                        if (y instanceof TextNote) {
+                            if (((TextNote) y).getContent().toLowerCase(Locale.ROOT).contains(p)) {
+                                allexistin = true;
+                            }
+                            if (((TextNote) y).getTitle().toLowerCase(Locale.ROOT).contains(p)) {
+                                allexistin = true;
+                            }
+
+                        }
+                    }
+                    if (!allexistin) {
+                        allexistor = false;
+                    }
+                }
+                if (allexistor && allexist) {
+                    result.add(y);
+                }
             }
+
+            //System.out.println(result);
+            return result;
         }
-
-
-        return result;
     }
 }
