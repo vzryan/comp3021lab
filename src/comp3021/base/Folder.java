@@ -15,6 +15,9 @@ public class Folder implements Comparable<Folder>, Serializable {
     public void addNote(Note no){
         notes.add(no);
     }
+    public void removeNotes(String title){
+        notes = (ArrayList<Note>) notes.stream().filter(x->!x.getTitle().equals(title)).toList();
+    }
 
     public String getName() {
         return name;
